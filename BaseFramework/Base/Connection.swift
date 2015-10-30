@@ -13,28 +13,20 @@ public final class Connection {
 
     /// The location of a SQLite database.
     public enum Location {
-
-        /// An in-memory database (equivalent to `.URI(":memory:")`).
-        ///
-        /// See: <https://www.sqlite.org/inmemorydb.html#sharedmemdb>
         case InMemory
-
-        /// A temporary, file-backed database (equivalent to `.URI("")`).
-        ///
-        /// See: <https://www.sqlite.org/inmemorydb.html#temp_db>
         case Temporary
-
-        /// A database located at the given URI filename (or path).
-        ///
-        /// See: <https://www.sqlite.org/uri.html>
-        ///
-        /// - Parameter filename: A URI filename
         case URI(String)
     }
 
     public var handle: COpaquePointer { return _handle }
 
     private var _handle: COpaquePointer = nil
+    
+    private var queue = dispatch_queue_create("br.com.bfs.BaseFramework", DISPATCH_QUEUE_SERIAL)
+    
+    private static let queueKey = unsafeBitCast(Connection.self, UnsafePointer<Void>.self)
+    
+    private lazy var queueContext: UnsafeMutablePointer<Void> = unsafeBitCast(self, UnsafeMutablePointer<Void>.self)
 
     /// Initializes a new SQLite connection.
     ///
@@ -132,7 +124,7 @@ public final class Connection {
         if dispatch_get_specific(Connection.queueKey) == queueContext {
             box()
         } else {
-            dispatch_sync(queue, box) // FIXME: rdar://problem/21389236
+            dispatch_sync(queue, box)
         }
 
         if let failure = failure {
@@ -149,12 +141,6 @@ public final class Connection {
 
         throw error
     }
-
-    private var queue = dispatch_queue_create("br.com.bfs.BaseFramework", DISPATCH_QUEUE_SERIAL)
-
-    private static let queueKey = unsafeBitCast(Connection.self, UnsafePointer<Void>.self)
-
-    private lazy var queueContext: UnsafeMutablePointer<Void> = unsafeBitCast(self, UnsafeMutablePointer<Void>.self)
 
 }
 
