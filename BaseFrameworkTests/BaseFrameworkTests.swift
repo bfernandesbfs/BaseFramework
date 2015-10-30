@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import BaseFramework
+import BaseFramework
 
 class BaseFrameworkTests: XCTestCase {
     
@@ -24,6 +24,7 @@ class BaseFrameworkTests: XCTestCase {
     func testCreateObject() {
 
         People.registerClass()
+        
     }
     
     func testSaveObject(){

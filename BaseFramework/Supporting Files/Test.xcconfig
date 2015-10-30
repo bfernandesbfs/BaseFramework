@@ -1,0 +1,9 @@
+//
+//  Test.xcconfig
+//  BaseFramework
+//
+//  Created by Bruno Fernandes on 30/10/15.
+//  Copyright © 2015 Bruno Fernandes. All rights reserved.
+//
+
+INFOPLIST_FILE = BaseFrameworkTests/Info.plist

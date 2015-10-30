@@ -1,0 +1,13 @@
+//
+//  Sqlite.xcconfig
+//  BaseFramework
+//
+//  Created by Bruno Fernandes on 30/10/15.
+//  Copyright © 2015 Bruno Fernandes. All rights reserved.
+//
+
+#include "Base.xcconfig"
+
+PRODUCT_NAME = BaseFramework
+
+OTHER_LDFLAGS = -lsqlite3

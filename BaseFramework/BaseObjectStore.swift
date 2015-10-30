@@ -21,6 +21,8 @@ public class BaseObjectStore {
     private var className:String!
     private var properties:[AnyObject]!
     
+    private var db:Connection!
+    
     public var debugDescription:String {
         return properties.description
     }
@@ -38,6 +40,8 @@ public class BaseObjectStore {
     }
     
     init(kls:NSObject.Type) {
+        
+        db = try! Connection(.URI(createPath()))
         
         if let obj = kls as? SubObject.Type {
             clzz = kls.init()
@@ -113,6 +117,13 @@ public class BaseObjectStore {
         if properties.count > 0 {
             let scheme = SchemeType.Create(className,properties)
             print(scheme.sql)
+            
+            do {
+                try db.execute(scheme.sql)
+            }
+            catch let error {
+                print(error)
+            }
         }
     }
     
@@ -189,6 +200,18 @@ public class BaseObjectStore {
         }
         
     }
+    
+    private func createPath() -> String {
+        
+        let docsPath = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true)[0] as NSString
+        let databaseStr = "BaseS.db"
+        let dbPath = docsPath.stringByAppendingPathComponent(databaseStr)
+        
+        print(dbPath)
+        
+        return dbPath as String
+    }
+
     
 }
 
