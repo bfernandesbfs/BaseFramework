@@ -12,13 +12,13 @@ import BaseFramework
 public class People: BaseObject, SubObject  {
     
     var firstName:NSString!
-    var lastName:String!
+    var lastName:String
     var age:Int
-    var number:NSNumber!
-    var genericAge:Float!
+    var age1:Float
     var register:Double!
+    var register1:NSNumber!
     var isN:Bool!
-    var now:NSDate!
+    var date:NSDate
     var data:NSData!
     
 //    override public class func initialize() {
@@ -29,15 +29,17 @@ public class People: BaseObject, SubObject  {
 //            self.registerClass()
 //        }
 //    }
-    
+//    
     public static func objClassName() -> String {
         return "People_2"
     }
     
     override init() {
-        firstName = ""
+        lastName  = ""
         age  = 0
-        //register = 0
+        age1 = 0
+        register = 0
+        date = NSDate()
         super.init()
     }
 }

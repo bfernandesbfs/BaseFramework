@@ -29,6 +29,8 @@ public class BaseObjectStore {
     
     init(kls:AnyObject) {
         
+        db = try! Connection(createPath())
+        
         if let obj = kls.dynamicType as? SubObject.Type {
             clzz = kls
             className = obj.objClassName()
@@ -41,7 +43,7 @@ public class BaseObjectStore {
     
     init(kls:NSObject.Type) {
         
-        db = try! Connection(.URI(createPath()))
+        db = try! Connection(createPath())
         
         if let obj = kls as? SubObject.Type {
             clzz = kls.init()
@@ -52,29 +54,41 @@ public class BaseObjectStore {
         }
     }
     
-    private enum SchemeType {
+    private enum SchemaType {
         
         case Create(String,[AnyObject])
         case Drop(String)
         case Select(String)
         case Replace(String,[AnyObject])
         case Insert(String,[AnyObject])
-        case Delete(String)
-        
+        case Delete(String,Int64)
+    
         var sql: String {
             switch self {
             case .Create(let className,let properties):
-                return "CREATE TABLE IF NOT EXISTS \(className) (objectId INTEGER PRIMARY KEY AUTOINCREMENT, createdAt DATETIME, updatedAt DATETIME \(createSql(properties))"
+                return "CREATE TABLE IF NOT EXISTS \(className) (objectId INTEGER PRIMARY KEY AUTOINCREMENT \(createSql(properties)))"
             case .Drop(let className):
                 return "DROP TABLE \(className)"
             case .Select(let className):
                 return "SELECT * FROM \(className) WHERE objectId = ?"
             case .Replace(let className,let properties):
-                return "INSERT OR REPLACE INTO \(className) \(saveSql(properties))"
+                return "INSERT OR REPLACE INTO \(className) (\(saveSql(properties)))"
             case .Insert(let className,let properties):
-                return "INSERT INTO \(className) \(saveSql(properties))"
-            case .Delete(let className):
-                return "DELETE FROM \(className) WHERE objectId = ?"
+                return "INSERT INTO \(className) (\(saveSql(properties)))"
+            case .Delete(let className , let objectId):
+                let comp = objectId == 0 ? "" : " WHERE objectId = ?"
+                return "DELETE FROM \(className)" + comp
+            }
+        }
+        
+        var args:[AnyObject?] {
+            switch self {
+            case .Replace(_,let properties):
+                return getArgs(properties)
+            case .Insert(_,let properties):
+                return getArgs(properties)
+            default:
+                return []
             }
         }
         
@@ -83,39 +97,60 @@ public class BaseObjectStore {
             for property in properties {
                 fields += ", \(property["key"] as! String) \(property["type"] as! String)"
             }
-            return fields + ")"
+            return fields
         }
         
         private func saveSql(properties:[AnyObject]) -> String {
             
-            var fields:String = "(createdAt, updatedAt"
-            var values:String = "VALUES (?, ? "
+            var fields:String = ""
+            var values:String = "VALUES ( "
+            var isFirst = true
             
             switch self {
             case .Replace(_, _):
-                fields = "(objectId, createdAt, updatedAt"
+                fields = "objectId "
                 values += ",? "
                 break
             default:
                 break
             }
             
-            
             for property in properties {
-                fields += ", \(property["key"] as! String)"
-                values += ", ?"
+                
+                if isFirst {
+                    isFirst = false
+                    fields += "\(property["key"] as! String)"
+                    values += "?"
+                    
+                } else {
+                    fields += ", \(property["key"] as! String)"
+                    values += ", ?"
+                }
+
             }
-            return fields + ") \(values))"
+            return fields + ") \(values)"
         }
         
-        
+        private func getArgs(properties:[AnyObject]) -> [AnyObject?] {
+            
+            var list:[AnyObject?] = [AnyObject]()
+            for property in properties {
+                if let obj:AnyObject = property["value"] {
+                    list.append(obj)
+                }
+                else{
+                    list.append(nil)
+                }
+            }
+            return list
+        }
     }
     
     
     public func registerSubClass(){
         
         if properties.count > 0 {
-            let scheme = SchemeType.Create(className,properties)
+            let scheme = SchemaType.Create(className,properties)
             print(scheme.sql)
             
             do {
@@ -128,31 +163,70 @@ public class BaseObjectStore {
     }
     
     public func unRegisterSubClass(){
-        let scheme = SchemeType.Drop(className)
-        scheme.sql
+        let scheme = SchemaType.Drop(className)
+        do {
+            try db.execute(scheme.sql)
+        }
+        catch let error {
+            print(error)
+        }
     }
     
     public func saveObject(){
+        properties = refectObject(clzz)
         if properties.count > 0 {
-            let scheme = SchemeType.Insert(className,properties)
-            print(scheme.sql)
+            do {
+                let base = clzz as! BaseObject
+                let schema = SchemaType.Insert(className,properties)
+                let rowId = try db.runRowId(schema.sql, schema.args)
+                base.objectId = NSNumber(longLong: rowId).integerValue
+            }
+            catch let error {
+                print(error)
+            }
+            
         }
     }
     
     public func changeObject(){
         if properties.count > 0 {
-            
-            let scheme = SchemeType.Replace(className,properties)
+            let scheme = SchemaType.Replace(className,properties)
             print(scheme.sql)
         }
     }
     
-    public func removeObject(){
-        if let _ = (clzz as! BaseObject).objectId {
-            let scheme = SchemeType.Delete(className)
-            print(scheme.sql)
+    public func removeObject() -> Int {
+        var changes:Int = 0
+        
+        if let objectId = (clzz as! BaseObject).objectId {
+            let scheme = SchemaType.Delete(className, objectId.datatypeValue)
+            do {
+                changes = try db.runChange(scheme.sql, objectId)
+            }
+            catch let error {
+                print(error)
+            }
+        
         }
+        
+        return changes
     }
+    
+    public func removeAllObject() -> Int{
+        var changes:Int = 0
+        
+        let scheme = SchemaType.Delete(className , 0)
+        do {
+            changes = try db.runChange(scheme.sql)
+        }
+        catch let error {
+            print(error)
+        }
+        
+        return changes
+    }
+    
+
     
     private func refectObject(kls:AnyObject) -> [AnyObject] {
         
@@ -160,7 +234,6 @@ public class BaseObjectStore {
         var properties = [AnyObject]()
         
         for case let (label?, anyValue) in aMirror.children {
-            Mirror(reflecting: anyValue).subjectType
             if let type = reflectType(Mirror(reflecting: anyValue).subjectType) {
                 if let value = anyValue as? AnyObject {
                     properties.append(["key":label,"value":value, "type":type])
@@ -173,13 +246,16 @@ public class BaseObjectStore {
                 assertionFailure("This property '\(label)' not is supported for BaseObject")
             }
         }
+        
+        
+        
         return properties
     }
     
     private func reflectType(type:Any) -> String! {
         
         switch type {
-        case is String.Type, is Optional<String>.Type, is NSString.Type:
+        case is String.Type, is Optional<String>.Type, is NSString.Type, is Optional<NSString>.Type:
             return "TEXT"
         case is Int.Type, is Optional<Int>.Type,is NSInteger.Type:
             return "INTEGER"

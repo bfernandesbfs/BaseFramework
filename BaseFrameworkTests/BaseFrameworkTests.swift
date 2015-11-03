@@ -27,33 +27,47 @@ class BaseFrameworkTests: XCTestCase {
         
     }
     
+    func testDropObject() {
+        
+        People.unRegisterClass()
+        
+    }
+    
     func testSaveObject(){
         
         let people:People = People()
+        people.unPinAll()
+        //people.firstName = "Bruno"
         people.lastName = "Fernandes"
         people.age  = 29
+        people.register = 123456
+        people.register1 = NSNumber(double: 0.5555)
         people.isN = false
+        
+        people.data = "Oiiiiiii".dataUsingEncoding(NSUTF8StringEncoding)
         
         people.pin()
         
-        print(people.description)
+        XCTAssertFalse(people.objectId == nil, "Create Pin success")
+        
+        
+        
     }
     
     func testRemoveObject() {
 
         let people:People = People()
-        people.objectId = 1
-
-        people.unpin()
+        people.objectId = 4
         
+        XCTAssert(people.unpin(), "UnPin data change")
     }
     
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
-        }
-    }
+//    func testPerformanceExample() {
+//        // This is an example of a performance test case.
+//        self.measureBlock {
+//            // Put the code you want to measure the time of here.
+//        }
+//    }
     
 }

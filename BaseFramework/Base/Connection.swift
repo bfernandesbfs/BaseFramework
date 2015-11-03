@@ -107,6 +107,46 @@ public final class Connection {
         try sync { try self.check(sqlite3_exec(self.handle, SQL, nil, nil, nil)) }
     }
 
+    
+    func prepare(statement: String, _ bindings: AnyObject?...) -> Statement {
+        if !bindings.isEmpty {
+            return prepare(statement, bindings)
+        }
+        return Statement(self, statement)
+    }
+    
+    public func prepare(statement: String, _ bindings: [AnyObject?]) -> Statement {
+        return prepare(statement).bind(bindings)
+    }
+    
+    public func run(statement: String, _ bindings: AnyObject?...) throws -> Statement {
+        return try run(statement, bindings)
+    }
+    
+    public func run(statement: String, _ bindings: [AnyObject?]) throws -> Statement {
+        return try prepare(statement).run(bindings)
+    }
+    
+    public func runRowId(statement: String, _ bindings: [AnyObject?]) throws -> Int64 {
+        return try sync {
+            try self.run(statement ,bindings)
+            return self.lastInsertRowid!
+        }
+    }
+    
+    public func runChange(statement: String, _ bindings: AnyObject?...) throws -> Int {
+        return try sync {
+            try self.run(statement ,bindings)
+            return self.changes
+        }
+    }
+    public func runChange(statement: String, _ bindings: [AnyObject?]) throws -> Int {
+        return try sync {
+            try self.run(statement ,bindings)
+            return self.changes
+        }
+    }
+    
     // MARK: - Error Handling
 
     func sync<T>(block: () throws -> T) rethrows -> T {

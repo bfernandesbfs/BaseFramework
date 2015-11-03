@@ -11,10 +11,8 @@ import Foundation
 public class BaseObject:NSObject {
     
     private var store:BaseObjectStore!
-    
+
     public var objectId:Int!
-    public var updatedAt:NSDate!
-    public var createdAt:NSDate!
     
     public var objClassName:String!
     
@@ -34,24 +32,18 @@ public class BaseObject:NSObject {
         objClassName = className
     }
     
+    // MARK: - Public Class
     public class func registerClass(){
-        print("Register")
-        
         BaseObjectStore(kls: self).registerSubClass()
-        
     }
     
     public class func unRegisterClass(){
-        print("drop Register")
-        
         BaseObjectStore(kls: self).unRegisterSubClass()
-        
     }
     
-    
+    // MARK: - Public Method
     public func pin(){
         store.saveObject()
-        
     }
     
     public func pin(change:Bool){
@@ -65,8 +57,12 @@ public class BaseObject:NSObject {
         
     }
     
-    public func unpin(){
-        store.removeObject()
+    public func unpin() -> Bool {
+        return store.removeObject() > 0
+    }
+    
+    public func unPinAll() -> Bool {
+        return store.removeAllObject() > 0
     }
     
 }
