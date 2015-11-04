@@ -108,7 +108,10 @@ public class BaseObjectService : ObjectServiceProtocol {
     }
     
     public func getObject() throws {
-
+        if let objectId = (clzz as! BaseObject).objectId {
+            let schema = SchemaType.Select(className)
+            try db.prepareQuery(schema.sql, [objectId])
+        }
     }
     
     

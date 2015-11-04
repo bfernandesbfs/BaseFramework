@@ -106,7 +106,7 @@ public final class Connection {
     public func execute(SQL: String) throws {
         try sync { try self.check(sqlite3_exec(self.handle, SQL, nil, nil, nil)) }
     }
-    
+
     func prepare(statement: String, _ bindings: AnyObject?...) -> Statement {
         if !bindings.isEmpty {
             return prepare(statement, bindings)
@@ -116,6 +116,12 @@ public final class Connection {
     
     public func prepare(statement: String, _ bindings: [AnyObject?]) -> Statement {
         return prepare(statement).bind(bindings)
+    }
+    
+    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> [AnyObject]? {
+        //let statement = prepare(statement, bindings)
+        
+        return nil
     }
     
     public func run(statement: String, _ bindings: AnyObject?...) throws -> Statement {

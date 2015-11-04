@@ -78,14 +78,11 @@ extension String : Binding, Value {
 
 
 extension NSDate {
-
     public var datatypeValue: String {
         let df = NSDateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
         return "\(df.stringFromDate(self))"
     }
-    
 }
 
 

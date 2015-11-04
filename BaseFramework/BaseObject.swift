@@ -53,7 +53,12 @@ public class BaseObject:NSObject {
     
     // MARK: - Public Method
     public func fetch(){
-
+        do {
+            try store.getObject()
+        }
+        catch let error {
+            print(error)
+        }
     }
     
     public func pin(){
