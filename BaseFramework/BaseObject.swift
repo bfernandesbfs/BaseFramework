@@ -10,11 +10,11 @@ import Foundation
 
 public class BaseObject:NSObject {
     
-    private var store:BaseObjectStore!
+    private var store:BaseObjectService!
 
     public var objectId:Int!
     
-    public var objClassName:String!
+    public var className:String!
     
     override public var description:String {
         return store.debugDescription
@@ -23,46 +23,66 @@ public class BaseObject:NSObject {
     override public init() {
         super.init()
         
-        store = BaseObjectStore(kls: self)
-
+        store = BaseObjectService(kls: self)
+        className = store.className
     }
     
     public init(className:String){
         
-        objClassName = className
+        self.className = className
     }
     
     // MARK: - Public Class
     public class func registerClass(){
-        BaseObjectStore(kls: self).registerSubClass()
+        do {
+            try BaseObjectService(kls: self).registerSubClass()
+        }
+        catch let error {
+            print(error)
+        }
     }
     
     public class func unRegisterClass(){
-        BaseObjectStore(kls: self).unRegisterSubClass()
+        do {
+            try BaseObjectService(kls: self).unRegisterSubClass()
+        }
+        catch let error {
+            print(error)
+        }
     }
     
     // MARK: - Public Method
-    public func pin(){
-        store.saveObject()
+    public func fetch(){
+
     }
     
-    public func pin(change:Bool){
-        
-        if change {
-            store.changeObject()
+    public func pin(){
+        do {
+            try store.changeObject()
         }
-        else{
-            store.saveObject()
+        catch let error{
+            print(error)
         }
-        
     }
     
     public func unpin() -> Bool {
-        return store.removeObject() > 0
+        do {
+            return try store.removeObject() > 0
+        }
+        catch let error{
+            print(error)
+            return false
+        }
     }
     
     public func unPinAll() -> Bool {
-        return store.removeAllObject() > 0
+        do {
+            return try store.removeAllObject() > 0
+        }
+        catch let error{
+            print(error)
+            return false
+        }
     }
     
 }

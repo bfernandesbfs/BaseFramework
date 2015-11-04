@@ -12,7 +12,7 @@ public protocol Binding {}
 
 public protocol Number : Binding {}
 
-public protocol Value {
+public protocol Value  {
     
     typealias ValueType = Self
     
@@ -75,6 +75,7 @@ extension String : Binding, Value {
     }
     
 }
+
 
 extension NSDate {
 

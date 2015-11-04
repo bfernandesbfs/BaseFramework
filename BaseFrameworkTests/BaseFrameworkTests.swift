@@ -36,7 +36,6 @@ class BaseFrameworkTests: XCTestCase {
     func testSaveObject(){
         
         let people:People = People()
-        people.unPinAll()
         //people.firstName = "Bruno"
         people.lastName = "Fernandes"
         people.age  = 29
@@ -48,16 +47,28 @@ class BaseFrameworkTests: XCTestCase {
         
         people.pin()
         
+        people.firstName = "Bruno"
+        
+        people.pin()
+        
         XCTAssertFalse(people.objectId == nil, "Create Pin success")
         
+    }
+    
+    func testChangeObject() {
         
+        let people:People = People()
+        people.objectId = 1
+        
+        people.fetch()
+    
         
     }
     
     func testRemoveObject() {
 
         let people:People = People()
-        people.objectId = 4
+        people.objectId = 5
         
         XCTAssert(people.unpin(), "UnPin data change")
     }

@@ -106,7 +106,6 @@ public final class Connection {
     public func execute(SQL: String) throws {
         try sync { try self.check(sqlite3_exec(self.handle, SQL, nil, nil, nil)) }
     }
-
     
     func prepare(statement: String, _ bindings: AnyObject?...) -> Statement {
         if !bindings.isEmpty {
@@ -140,11 +139,78 @@ public final class Connection {
             return self.changes
         }
     }
+    
     public func runChange(statement: String, _ bindings: [AnyObject?]) throws -> Int {
         return try sync {
             try self.run(statement ,bindings)
             return self.changes
         }
+    }
+    
+    
+    
+    // MARK: - Transactions
+    
+    // TODO: Consider not requiring a throw to roll back?
+    /// Runs a transaction with the given mode.
+    ///
+    /// - Note: Transactions cannot be nested. To nest transactions, see
+    ///   `savepoint()`, instead.
+    ///
+    /// - Parameters:
+    ///
+    ///   - mode: The mode in which a transaction acquires a lock.
+    ///
+    ///     Default: `.Deferred`
+    ///
+    ///   - block: A closure to run SQL statements within the transaction.
+    ///     The transaction will be committed when the block returns. The block
+    ///     must throw to roll the transaction back.
+    ///
+    /// - Throws: `Result.Error`, and rethrows.
+    public func transaction(mode: TransactionMode = .Deferred, block: () throws -> Void) throws {
+        try transaction("BEGIN \(mode.rawValue) TRANSACTION", block, "COMMIT TRANSACTION", or: "ROLLBACK TRANSACTION")
+    }
+    
+    // TODO: Consider not requiring a throw to roll back?
+    // TODO: Consider removing ability to set a name?
+    /// Runs a transaction with the given savepoint name (if omitted, it will
+    /// generate a UUID).
+    ///
+    /// - SeeAlso: `transaction()`.
+    ///
+    /// - Parameters:
+    ///
+    ///   - savepointName: A unique identifier for the savepoint (optional).
+    ///
+    ///   - block: A closure to run SQL statements within the transaction.
+    ///     The savepoint will be released (committed) when the block returns.
+    ///     The block must throw to roll the savepoint back.
+    ///
+    /// - Throws: `SQLite.Result.Error`, and rethrows.
+    public func savepoint(name: String = NSUUID().UUIDString, block: () throws -> Void) throws {
+        let name = name.quote("'")
+        let savepoint = "SAVEPOINT \(name)"
+        
+        try transaction(savepoint, block, "RELEASE \(savepoint)", or: "ROLLBACK TO \(savepoint)")
+    }
+    
+    private func transaction(begin: String, _ block: () throws -> Void, _ commit: String, or rollback: String) throws {
+        return try sync {
+            try self.run(begin)
+            do {
+                try block()
+            } catch {
+                try self.run(rollback)
+                throw error
+            }
+            try self.run(commit)
+        }
+    }
+    
+    /// Interrupts any long-running queries.
+    public func interrupt() {
+        sqlite3_interrupt(handle)
     }
     
     // MARK: - Error Handling
@@ -186,6 +252,16 @@ public final class Connection {
 
 extension Connection : CustomStringConvertible {
 
+    /// The mode in which a transaction acquires a lock.
+    public enum TransactionMode : String {
+        /// Defers locking the database till the first read/write executes.
+        case Deferred = "DEFERRED"
+        /// Immediately acquires a reserved lock on the database.
+        case Immediate = "IMMEDIATE"
+        /// Immediately acquires an exclusive lock on all databases.
+        case Exclusive = "EXCLUSIVE"
+    }
+    
     public var description: String {
         return String.fromCString(sqlite3_db_filename(handle, nil))!
     }

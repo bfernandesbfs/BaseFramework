@@ -11,7 +11,7 @@
 		4A5044431BE28E1800A6F2E2 /* BaseFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A5044381BE28E1800A6F2E2 /* BaseFramework.framework */; };
 		4A5044481BE28E1800A6F2E2 /* BaseFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5044471BE28E1800A6F2E2 /* BaseFrameworkTests.swift */; };
 		4A5044531BE28E4200A6F2E2 /* BaseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5044521BE28E4200A6F2E2 /* BaseObject.swift */; };
-		4A5044551BE28E6C00A6F2E2 /* BaseObjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5044541BE28E6C00A6F2E2 /* BaseObjectStore.swift */; };
+		4A5044551BE28E6C00A6F2E2 /* BaseObjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5044541BE28E6C00A6F2E2 /* BaseObjectService.swift */; };
 		4A5044571BE28F3600A6F2E2 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5044561BE28F3600A6F2E2 /* Test.swift */; };
 		4A5AF4CA1BE8D16A00553E79 /* Bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5AF4C91BE8D16900553E79 /* Bind.swift */; };
 		4A8D83AE1BE3B81500ADC12D /* fts3_tokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A8D83AD1BE3B81500ADC12D /* fts3_tokenizer.h */; };
@@ -41,7 +41,7 @@
 		4A5044471BE28E1800A6F2E2 /* BaseFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFrameworkTests.swift; sourceTree = "<group>"; };
 		4A5044491BE28E1800A6F2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A5044521BE28E4200A6F2E2 /* BaseObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseObject.swift; sourceTree = "<group>"; };
-		4A5044541BE28E6C00A6F2E2 /* BaseObjectStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseObjectStore.swift; sourceTree = "<group>"; };
+		4A5044541BE28E6C00A6F2E2 /* BaseObjectService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseObjectService.swift; sourceTree = "<group>"; };
 		4A5044561BE28F3600A6F2E2 /* Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		4A5AF4C91BE8D16900553E79 /* Bind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Bind.swift; path = Base/Bind.swift; sourceTree = "<group>"; };
 		4A8D83AD1BE3B81500ADC12D /* fts3_tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fts3_tokenizer.h; path = ../fts3_tokenizer.h; sourceTree = "<group>"; };
@@ -97,7 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				4A5044521BE28E4200A6F2E2 /* BaseObject.swift */,
-				4A5044541BE28E6C00A6F2E2 /* BaseObjectStore.swift */,
+				4A5044541BE28E6C00A6F2E2 /* BaseObjectService.swift */,
 				4A8D83D91BE3ED5F00ADC12D /* Helpers.swift */,
 				4A8D83CE1BE3ECB900ADC12D /* Data */,
 				4A8D83BB1BE3BA0800ADC12D /* Supporting Files */,
@@ -273,7 +273,7 @@
 				4A5AF4CA1BE8D16A00553E79 /* Bind.swift in Sources */,
 				4A8D83D61BE3ED0700ADC12D /* Connection.swift in Sources */,
 				4A8D83DA1BE3ED5F00ADC12D /* Helpers.swift in Sources */,
-				4A5044551BE28E6C00A6F2E2 /* BaseObjectStore.swift in Sources */,
+				4A5044551BE28E6C00A6F2E2 /* BaseObjectService.swift in Sources */,
 				4A8D83B21BE3B82000ADC12D /* SQLite-Bridging.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
