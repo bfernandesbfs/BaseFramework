@@ -118,9 +118,24 @@ public final class Connection {
         return prepare(statement).bind(bindings)
     }
     
-    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> [AnyObject]? {
-        //let statement = prepare(statement, bindings)
+    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> AnySequence<AnyObject>? {
+        let statement = prepare(statement, bindings)
         
+        
+        let columnNames: [String: Int] = {
+            var (columnNames, _) = ([String: Int](), 0)
+            for i in 0..<statement.columnNames.count {
+                columnNames[statement.columnNames[i]] = i
+            }
+            return columnNames
+        }()
+       
+        let x = AnySequence { anyGenerator { statement.next().map { Row(columnNames, $0) } } }
+        
+        for te in x {
+            print(te)
+        }
+    
         return nil
     }
     

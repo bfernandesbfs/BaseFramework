@@ -20,7 +20,7 @@ public final class Statement {
     }
     
     /// A cursor pointing to the current row.
-    //public lazy var row: Cursor = Cursor(self)
+    public lazy var row: Cursor = Cursor(self)
 
     init(_ connection: Connection, _ SQL: String) {
         self.connection = connection
@@ -44,7 +44,6 @@ public final class Statement {
         sqlite3_reset(handle)
         if (shouldClear) { sqlite3_clear_bindings(handle) }
     }
-
     
     /// - Parameter bindings: A list of parameters to bind to the statement.
     ///
@@ -121,6 +120,22 @@ public final class Statement {
     
 }
 
+extension Statement : SequenceType {
+    
+    public func generate() -> Statement {
+        reset(clearBindings: false)
+        return self
+    }
+    
+}
+
+extension Statement : GeneratorType {
+    
+    public func next() -> [AnyObject?]? {
+        return try! step() ? Array(row) : nil
+    }
+    
+}
 
 extension Statement : CustomStringConvertible {
     
