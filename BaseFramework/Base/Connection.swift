@@ -118,20 +118,6 @@ public final class Connection {
         return prepare(statement).bind(bindings)
     }
     
-    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> AnySequence<Row>? {
-        let statement = prepare(statement, bindings)
-        
-        let columnNames: [String: Int] = {
-            var (columnNames, _) = ([String: Int](), 0)
-            for i in 0..<statement.columnNames.count {
-                columnNames[statement.columnNames[i]] = i
-            }
-            return columnNames
-        }()
-    
-        return AnySequence { anyGenerator { statement.next().map { Row(columnNames, $0) } } }
-    }
-    
     public func run(statement: String, _ bindings: AnyObject?...) throws -> Statement {
         return try run(statement, bindings)
     }
@@ -262,6 +248,29 @@ public final class Connection {
         throw error
     }
 
+}
+
+extension Connection {
+    
+    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> AnySequence<Row>? {
+        let statement = prepare(statement, bindings)
+        
+        let columnNames: [String: Int] = {
+            var (columnNames, _) = ([String: Int](), 0)
+            for i in 0..<statement.columnNames.count {
+                columnNames[statement.columnNames[i]] = i
+            }
+            return columnNames
+        }()
+        
+        return AnySequence { anyGenerator { statement.next().map { Row(columnNames, $0) } } }
+    }
+    
+    public func prepareFetch(statement: String, _ bindings: AnyObject?...) throws -> Row? {
+        return try prepareQuery(statement, bindings)!.generate().next()
+    }
+    
+    
 }
 
 extension Connection : CustomStringConvertible {

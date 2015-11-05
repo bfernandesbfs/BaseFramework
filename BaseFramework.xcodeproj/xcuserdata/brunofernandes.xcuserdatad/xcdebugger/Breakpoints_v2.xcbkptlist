@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "BaseFramework/BaseObjectService.swift"
-            timestampString = "468435233.516783"
+            filePath = "BaseFrameworkTests/BaseFrameworkTests.swift"
+            timestampString = "468442808.523975"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
-            landmarkName = "getObject()"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "testChangeObject()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

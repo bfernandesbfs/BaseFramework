@@ -55,16 +55,16 @@ extension Cursor : SequenceType {
         let columnType = sqlite3_column_type(handle, Int32(idx))
         
         switch columnType {
-        case SQLITE_BLOB:
-            return self[idx] as NSData
-        case SQLITE_FLOAT:
-            return self[idx] as Double
         case SQLITE_INTEGER:
             return self[idx] as Int64
-        case SQLITE_NULL:
-            return nil
         case SQLITE_TEXT:
             return self[idx] as String
+        case SQLITE_FLOAT:
+            return self[idx] as Double
+        case SQLITE_BLOB:
+            return self[idx] as NSData
+        case SQLITE_NULL:
+            return nil
         case let type:
             fatalError("unsupported column type: \(type)")
         }
@@ -93,6 +93,10 @@ public struct Row {
     
     public subscript(column: String) -> Value! {
         return get(column)!
+    }
+    
+    public subscript(index: Int) -> String {
+        return Array(columnNames.keys)[index]
     }
     
     private func get(column: String) -> Value? {

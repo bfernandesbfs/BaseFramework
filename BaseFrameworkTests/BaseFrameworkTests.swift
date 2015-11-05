@@ -58,10 +58,11 @@ class BaseFrameworkTests: XCTestCase {
     func testChangeObject() {
         
         let people:People = People()
-        people.objectId = 1
+        people.objectId = 2
         
         people.fetch()
     
+        print(people.firstName)
         
     }
     
@@ -69,6 +70,8 @@ class BaseFrameworkTests: XCTestCase {
 
         let people:People = People()
         people.objectId = 5
+        
+        
         
         XCTAssert(people.unpin(), "UnPin data change")
     }

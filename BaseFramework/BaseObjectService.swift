@@ -110,18 +110,14 @@ public class BaseObjectService : ObjectServiceProtocol {
     public func getObject() throws {
         if let objectId = (clzz as! BaseObject).objectId {
             let schema = SchemaType.Select(className)
-            for obj in try db.prepareQuery(schema.sql, [objectId])!{
+            if let obj = try db.prepareFetch(schema.sql, objectId) {
                 print(obj)
-                print(obj["objectId"])                
-                print(obj["firstName"])
-                print(obj["lastName"])
-                print(obj["age"])
-                print(obj["age1"])
-                print(obj["register"])
-                print(obj["register1"])
-                print(obj["isN"])
-                print(obj["date"])
-                print(obj["data"])
+                for property in properties {
+                    if let value = obj[property["key"] as! String] as? AnyObject {
+                        (clzz as! NSObject).setValue(value, forKey: property["key"] as! String)
+                    }
+                }
+                
             }
         }
     }
