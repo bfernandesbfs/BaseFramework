@@ -118,9 +118,8 @@ public final class Connection {
         return prepare(statement).bind(bindings)
     }
     
-    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> AnySequence<AnyObject>? {
+    public func prepareQuery(statement: String, _ bindings: [AnyObject?]) throws -> AnySequence<Row>? {
         let statement = prepare(statement, bindings)
-        
         
         let columnNames: [String: Int] = {
             var (columnNames, _) = ([String: Int](), 0)
@@ -129,14 +128,8 @@ public final class Connection {
             }
             return columnNames
         }()
-       
-        let x = AnySequence { anyGenerator { statement.next().map { Row(columnNames, $0) } } }
-        
-        for te in x {
-            print(te)
-        }
     
-        return nil
+        return AnySequence { anyGenerator { statement.next().map { Row(columnNames, $0) } } }
     }
     
     public func run(statement: String, _ bindings: AnyObject?...) throws -> Statement {

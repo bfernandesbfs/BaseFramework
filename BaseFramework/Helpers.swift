@@ -10,6 +10,14 @@ import Foundation
 
 let SQLITE_TRANSIENT = unsafeBitCast(-1, sqlite3_destructor_type.self)
 
+public var dateFormatter: NSDateFormatter = {
+    let formatter = NSDateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    formatter.locale = NSLocale.currentLocale()
+    formatter.timeZone = NSTimeZone.systemTimeZone()
+    return formatter
+}()
+
 extension String {
     
     func quote(mark: Character = "\"") -> String {

@@ -8,110 +8,104 @@
 
 import Foundation
 
-public protocol Binding {}
+public protocol Value {}
 
-public protocol Number : Binding {}
-
-public protocol Value   {
-    
+public protocol Binding {
     typealias ValueType = Self
-    
-    typealias Datatype : Binding
-    
+    typealias Datatype : Value
     static var declaredDatatype: String { get }
-    
     static func fromDatatypeValue(datatypeValue: Datatype) -> ValueType
     
-    var datatypeValue: Datatype { get }
-    
 }
 
-public protocol BindValue {
-    
-    static var declaredDatatype: String { get }
-    
-     var datatypeValue: String  { get }
-    
-}
-
-extension Double : Number, Value {
-    
-    public static let declaredDatatype = "REAL"
-    
-    public static func fromDatatypeValue(datatypeValue: Double) -> Double {
-        return datatypeValue
-    }
-    
-    public var datatypeValue: Double {
-        return self
-    }
-    
-}
-
-extension Int64 : Number, Value {
-    
-    public static let declaredDatatype = "INTEGER"
-    
-    public static func fromDatatypeValue(datatypeValue: Int64) -> Int64 {
-        return datatypeValue
-    }
-    
-    public var datatypeValue: Int64 {
-        return self
-    }
-    
-}
-
-extension String : Binding, Value {
+extension String : Value , Binding {
     
     public static let declaredDatatype = "TEXT"
-    
     public static func fromDatatypeValue(datatypeValue: String) -> String {
         return datatypeValue
     }
-    
-    public var datatypeValue: String {
-        return self
-    }
-    
 }
 
-extension NSDate {
-    public var datatypeValue: String {
-        let df = NSDateFormatter()
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return "\(df.stringFromDate(self))"
+extension Int : Value , Binding  {
+    
+    public static var declaredDatatype = Int64.declaredDatatype
+    public static func fromDatatypeValue(datatypeValue: Int64) -> Int {
+        return Int(datatypeValue)
+    }
+    public func toInt64() -> Int64 {
+        return Int64(self)
     }
 }
 
-
-// MARK: -
-
-extension Bool : Binding, Value {
+extension Int64 : Value , Binding  {
     
-    public static var declaredDatatype = Int.declaredDatatype
+    public static let declaredDatatype = "INTEGER"
+    public static func fromDatatypeValue(datatypeValue: Int64) -> Int64 {
+        return datatypeValue
+    }
+}
+
+extension Double : Value , Binding  {
     
+    public static let declaredDatatype = "DOUBLE"
+    public static func fromDatatypeValue(datatypeValue: Double) -> Double {
+        return datatypeValue
+    }
+}
+
+extension Float : Value , Binding   {
+    
+    public static let declaredDatatype = "FLOAT"
+    public static func fromDatatypeValue(datatypeValue: Float) -> Float {
+        return datatypeValue
+    }
+}
+
+extension NSNumber : Value , Binding  {
+    
+    public class var declaredDatatype:String {
+        return "NUMERIC"
+    }
+    public static func fromDatatypeValue(datatypeValue: NSNumber) -> NSNumber {
+        return datatypeValue
+    }
+}
+
+extension Bool : Value , Binding  {
+    
+    public static var declaredDatatype = "BOOLEAN"
     public static func fromDatatypeValue(datatypeValue: Int) -> Bool {
         return datatypeValue != 0
     }
     
-    public var datatypeValue: Int {
+    public func toInt() -> Int {
         return self ? 1 : 0
     }
     
 }
 
-extension Int : Number, Value {
+extension NSDate : Value , Binding  {
     
-    public static var declaredDatatype = Int64.declaredDatatype
-    
-    public static func fromDatatypeValue(datatypeValue: Int64) -> Int {
-        return Int(datatypeValue)
+    public class var declaredDatatype:String {
+        return "DATETIME"
     }
-    
-    public var datatypeValue: Int64 {
-        return Int64(self)
+    public class func fromDatatypeValue(datatypeValue: NSDate) -> NSDate {
+        return dateFormatter.dateFromString(datatypeValue.toString())!
     }
+
+    public func toString() -> String {
+        return dateFormatter.stringFromDate(self)
+    }
+}
+
+extension NSData : Value , Binding  {
     
+    public class var declaredDatatype:String {
+        return "BLOB"
+    }
+    public class func fromDatatypeValue(datatypeValue: NSData) -> NSData {
+        return datatypeValue
+    }
+
 }
 

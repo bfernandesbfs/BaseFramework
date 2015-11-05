@@ -108,11 +108,11 @@ public final class Statement {
         } else if let value = value as? String {
             sqlite3_bind_text(handle, Int32(idx), value, -1, SQLITE_TRANSIENT)
         } else if let value = value as? Int {
-            sqlite3_bind_int64(handle, Int32(idx), value.datatypeValue)
+            sqlite3_bind_int64(handle, Int32(idx), value.toInt64())
         } else if let value = value as? Bool {
-            sqlite3_bind_int(handle, Int32(idx), Int32(value.datatypeValue))
+            sqlite3_bind_int(handle, Int32(idx), Int32(value.toInt()))
         } else if let value = value as? NSDate {
-            sqlite3_bind_text(handle, Int32(idx), value.datatypeValue, -1, SQLITE_TRANSIENT)
+            sqlite3_bind_text(handle, Int32(idx), value.toString(), -1, SQLITE_TRANSIENT)
         } else if let value = value {
             fatalError("tried to bind unexpected value \(value)")
         }
@@ -131,7 +131,7 @@ extension Statement : SequenceType {
 
 extension Statement : GeneratorType {
     
-    public func next() -> [AnyObject?]? {
+    public func next() -> [Value?]? {
         return try! step() ? Array(row) : nil
     }
     

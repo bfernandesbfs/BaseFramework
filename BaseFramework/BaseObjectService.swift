@@ -96,7 +96,7 @@ public class BaseObjectService : ObjectServiceProtocol {
     public func removeObject() throws -> Int {
         var changes:Int = 0
         if let objectId = (clzz as! BaseObject).objectId {
-            let scheme = SchemaType.Delete(className, objectId.datatypeValue)
+            let scheme = SchemaType.Delete(className, objectId.toInt64())
             changes = try db.runChange(scheme.sql, objectId)
         }
         return changes
@@ -110,7 +110,19 @@ public class BaseObjectService : ObjectServiceProtocol {
     public func getObject() throws {
         if let objectId = (clzz as! BaseObject).objectId {
             let schema = SchemaType.Select(className)
-            try db.prepareQuery(schema.sql, [objectId])
+            for obj in try db.prepareQuery(schema.sql, [objectId])!{
+                print(obj)
+                print(obj["objectId"])                
+                print(obj["firstName"])
+                print(obj["lastName"])
+                print(obj["age"])
+                print(obj["age1"])
+                print(obj["register"])
+                print(obj["register1"])
+                print(obj["isN"])
+                print(obj["date"])
+                print(obj["data"])
+            }
         }
     }
     
@@ -142,21 +154,21 @@ public class BaseObjectService : ObjectServiceProtocol {
         
         switch type {
         case is String.Type, is Optional<String>.Type, is NSString.Type, is Optional<NSString>.Type:
-            return "TEXT"
+            return String.declaredDatatype
         case is Int.Type, is Optional<Int>.Type,is NSInteger.Type:
-            return "INTEGER"
+            return Int.declaredDatatype
         case is Double.Type, is Optional<Double>.Type:
-            return "DOUBLE"
+            return Double.declaredDatatype
         case is Float.Type, is Optional<Float>.Type:
-            return "FLOAT"
+            return Float.declaredDatatype
         case is NSNumber.Type, is Optional<NSNumber>.Type:
-            return "NUMERIC"
+            return NSNumber.declaredDatatype
         case is Bool.Type, is Optional<Bool>.Type:
-            return "BOOLEAN"
+            return Bool.declaredDatatype
         case is NSDate.Type, is Optional<NSDate>.Type:
-            return "DATETIME"
+            return NSDate.declaredDatatype
         case is NSData.Type, is Optional<NSData>.Type:
-            return "BLOB"
+            return NSData.declaredDatatype
         default:
             return nil
         }
