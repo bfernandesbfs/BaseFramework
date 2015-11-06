@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class BaseObject:NSObject {
+public class BaseObject : NSObject {
     
     private var store:BaseObjectService!
 
@@ -31,7 +31,7 @@ public class BaseObject:NSObject {
         
         self.className = className
     }
-    
+
     // MARK: - Public Class
     public class func registerClass(){
         do {
@@ -52,12 +52,14 @@ public class BaseObject:NSObject {
     }
     
     // MARK: - Public Method
-    public func fetch(){
+    public func fetch() -> Bool {
         do {
             try store.getObject()
+            return true
         }
         catch let error {
             print(error)
+            return false
         }
     }
     

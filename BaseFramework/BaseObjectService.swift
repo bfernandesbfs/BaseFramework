@@ -108,20 +108,17 @@ public class BaseObjectService : ObjectServiceProtocol {
     }
     
     public func getObject() throws {
-        if let objectId = (clzz as! BaseObject).objectId {
-            let schema = SchemaType.Select(className)
-            if let obj = try db.prepareFetch(schema.sql, objectId) {
-                print(obj)
-                for property in properties {
-                    if let value = obj[property["key"] as! String] as? AnyObject {
-                        (clzz as! NSObject).setValue(value, forKey: property["key"] as! String)
-                    }
+        let schema = SchemaType.Select(className)
+        if let base = clzz as? BaseObject ,let obj = try db.prepareFetch(schema.sql, base.objectId) {
+            for property in properties {
+                let key = property["key"] as! String
+                let type = property["type"] as! String
+                if let value = castDataValue(key ,type: type, row: obj) {
+                    base.setValue(value, forKey: key)
                 }
-                
             }
         }
     }
-    
     
     // MARK: - Private Method
     private func refectObject(kls:AnyObject) -> [AnyObject] {
@@ -151,11 +148,11 @@ public class BaseObjectService : ObjectServiceProtocol {
         switch type {
         case is String.Type, is Optional<String>.Type, is NSString.Type, is Optional<NSString>.Type:
             return String.declaredDatatype
-        case is Int.Type, is Optional<Int>.Type,is NSInteger.Type:
+        case is Int.Type, is Optional<Int>.Type,is Int64.Type, is Optional<Int64>.Type,is NSInteger.Type:
             return Int.declaredDatatype
         case is Double.Type, is Optional<Double>.Type:
             return Double.declaredDatatype
-        case is Float.Type, is Optional<Float>.Type:
+        case is Float.Type, is Optional<Float>.Type,is Float64.Type, is Optional<Float64>.Type:
             return Float.declaredDatatype
         case is NSNumber.Type, is Optional<NSNumber>.Type:
             return NSNumber.declaredDatatype
@@ -168,7 +165,31 @@ public class BaseObjectService : ObjectServiceProtocol {
         default:
             return nil
         }
+    }
+    
+    private func castDataValue(key:String, type:String, row:Row) -> AnyObject! {
         
+        switch type {
+        case String.declaredDatatype:
+            return row[key , String.self]
+        case Int.declaredDatatype:
+            return row[key , Int.self]
+        case Double.declaredDatatype:
+            return row[key , Double.self]
+        case Float.declaredDatatype:
+            return row[key , Float.self]
+        case NSNumber.declaredDatatype:
+            return row[key , NSNumber.self]
+        case Bool.declaredDatatype:
+            return row[key , Bool.self]
+        case NSDate.declaredDatatype:
+            return row[key , NSDate.self]
+        case NSData.declaredDatatype:
+            return row[key , NSData.self]
+        default:
+            return nil
+        }
+
     }
     
     private func createPath() -> String {

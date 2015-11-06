@@ -37,19 +37,19 @@ class BaseFrameworkTests: XCTestCase {
         
         let people:People = People()
         //people.firstName = "Bruno"
-        people.lastName = "Fernandes"
-        people.age  = 29
-        people.register = 123456
-        people.register1 = NSNumber(double: 0.5555)
-        people.isN = false
+        people.lastName = "Fernandes 2"
+        people.age  = 15
+        people.register = 654321
+        people.register1 = NSNumber(double: 0.4545)
+        people.isN = true
         
-        people.data = "Oiiiiiii".dataUsingEncoding(NSUTF8StringEncoding)
-        
-        people.pin()
-        
-        people.firstName = "Bruno"
+        //people.data = "Chaooooo".dataUsingEncoding(NSUTF8StringEncoding)
         
         people.pin()
+        
+        //people.firstName = "Brunoooo"
+        
+        //people.pin()
         
         XCTAssertFalse(people.objectId == nil, "Create Pin success")
         
@@ -62,7 +62,16 @@ class BaseFrameworkTests: XCTestCase {
         
         people.fetch()
     
-        print(people.firstName)
+        print("objectId",people.objectId)
+        print("firstName",people.firstName == nil ? "nil" : people.firstName  )
+        print("lastName",people.lastName)
+        print("age",people.age)
+        print("age1",people.age1)
+        print("isN",people.isN)
+        print("register",people.register)
+        print("register1",people.register1)
+        print("date",people.date == nil ? "nil" : people.date)
+        print("data",people.data == nil ? "nil" : people.data)
         
     }
     

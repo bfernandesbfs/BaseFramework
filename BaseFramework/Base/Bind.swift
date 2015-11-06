@@ -49,15 +49,15 @@ extension Double : Value , Binding  {
     
     public static let declaredDatatype = "DOUBLE"
     public static func fromDatatypeValue(datatypeValue: Double) -> Double {
-        return datatypeValue
+        return  datatypeValue
     }
 }
 
 extension Float : Value , Binding   {
     
     public static let declaredDatatype = "FLOAT"
-    public static func fromDatatypeValue(datatypeValue: Float) -> Float {
-        return datatypeValue
+    public static func fromDatatypeValue(datatypeValue: Double) -> Float {
+        return Float(datatypeValue)
     }
 }
 
@@ -74,7 +74,7 @@ extension NSNumber : Value , Binding  {
 extension Bool : Value , Binding  {
     
     public static var declaredDatatype = "BOOLEAN"
-    public static func fromDatatypeValue(datatypeValue: Int) -> Bool {
+    public static func fromDatatypeValue(datatypeValue: Int64) -> Bool {
         return datatypeValue != 0
     }
     
@@ -89,8 +89,8 @@ extension NSDate : Value , Binding  {
     public class var declaredDatatype:String {
         return "DATETIME"
     }
-    public class func fromDatatypeValue(datatypeValue: NSDate) -> NSDate {
-        return dateFormatter.dateFromString(datatypeValue.toString())!
+    public class func fromDatatypeValue(datatypeValue: String) -> NSDate {
+        return dateFormatter.dateFromString(datatypeValue)!
     }
 
     public func toString() -> String {

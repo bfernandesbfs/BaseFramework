@@ -37,7 +37,7 @@ public struct Cursor {
     }
     
     public subscript(idx: Int) -> Bool {
-        return Bool.fromDatatypeValue(self[idx])
+        return sqlite3_column_int(handle,  Int32(idx)) != 0
     }
     
     public subscript(idx: Int) -> NSData {
@@ -91,19 +91,18 @@ public struct Row {
         self.values = values
     }
     
-    public subscript(column: String) -> Value! {
+    public func get<V: Binding>(column: String) -> V {
         return get(column)!
     }
     
-    public subscript(index: Int) -> String {
-        return Array(columnNames.keys)[index]
-    }
-    
-    private func get(column: String) -> Value? {
+    private func get<V: Binding>(column: String) -> V? {
         
-        func valueAtIndex(idx: Int) -> Value? {
-            guard let value = values[idx] else { return nil }
-            return value
+        func valueAtIndex(idx: Int) -> V? {
+            guard let value = values[idx] as? V.Datatype else {
+                return nil
+            }
+            
+            return (V.fromDatatypeValue(value) as? V)!
         }
         
         guard let idx = columnNames[column] else {
@@ -121,6 +120,69 @@ public struct Row {
         
         return valueAtIndex(idx)
     }
+    
+    
+    public subscript(column: String , type:Int.Type) -> Int {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:String.Type) -> String {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:String.Type) -> String? {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:Float.Type) -> Float {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:Double.Type) -> Double {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:Double.Type) -> Double? {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:Bool.Type) -> Bool {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:Bool.Type) -> Bool? {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSNumber.Type) -> NSNumber {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSNumber.Type) -> NSNumber? {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSDate.Type) -> NSDate {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSDate.Type) -> NSDate? {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSData.Type) -> NSData {
+        return get(column)
+    }
+    
+    public subscript(column: String , type:NSData.Type) -> NSData? {
+        return get(column)
+    }
+    
+    public subscript(index: Int) -> String {
+        return Array(columnNames.keys)[index]
+    }
+    
+    
 }
 
 

@@ -12,14 +12,15 @@ import BaseFramework
 public class People: BaseObject, SubObject  {
     
     var firstName:NSString!
-    var lastName:String
+    var lastName:String!
     var age:Int
     var age1:Float
-    var register:Double!
+    var register:Double
+    var isN:Bool
     var register1:NSNumber!
-    var isN:Bool!
-    var date:NSDate
     var data:NSData!
+    var date:NSDate!
+    
     
 //    override public class func initialize() {
 //        struct Static {
@@ -38,8 +39,8 @@ public class People: BaseObject, SubObject  {
         lastName  = ""
         age  = 0
         age1 = 0
+        isN = false
         register = 0
-        date = NSDate()
         super.init()
     }
 }
